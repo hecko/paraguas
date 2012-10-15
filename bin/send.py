@@ -23,7 +23,7 @@ args = parser.parse_args()
 
 if args.status == 'OK' or args.status == '0' or args.status == 'ok' or args.status == 'UP' or args.status == 'up':
 	status = 0
-elif args.status == '3' or args.status == 'unknown' args.status == 'UNKNOWN' args.status == 'UNREACHABLE' or args.status == 'unreachable':
+elif args.status == '3' or args.status == 'unknown' or args.status == 'UNKNOWN' or args.status == 'UNREACHABLE' or args.status == 'unreachable':
 	status = 3 
 else:
 	status = 1
