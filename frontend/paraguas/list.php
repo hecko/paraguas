@@ -21,7 +21,7 @@ while ($row = mysql_fetch_assoc($raw)) {
 	$data[$row['id']] = $row;
 }
 
-$cols = array('last_time','name','status','message','first_time','count');
+$cols = array('last_problem_time','name','status','message','first_time','count');
 
 $out.='<table class="table table-condensed table-hover">';
 
@@ -59,7 +59,7 @@ foreach ($data as $r) {
       $out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r[$c].'</button></td>';
 	} elseif ($c=='status') {
 	  $out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r['status_btn_value'].' ('.$r['severity'].')</button></td>';
-    } elseif ($c == 'first_time') {
+    } elseif (($c == 'first_time') or ($c == 'last_problem_time')) {
       $r[$c] = date("j.M H:i",$r[$c]);
 	  $out.='<td>'.$r[$c].'</td>';
 	} elseif ($c == 'last_time') {
@@ -76,7 +76,9 @@ foreach ($data as $r) {
 	}
   }
   $out.='<td>
-	<a href="del.php?id='.$r['id'].'" class="icon-hand-left"></a>
+	<a class="btn btn-mini" href="del.php?id='.$r['id'].'">del</a>
+	<a class="btn btn-mini" href="ticket.php?id='.$r['id'].'">create ticket</a></a>
+	<a class="btn btn-mini" href="ack.php?id='.$r['id'].'">ack</a></a>
     </td>';
   $out.='</tr>';
 }

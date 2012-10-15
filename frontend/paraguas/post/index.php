@@ -31,14 +31,14 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
       }
     }
   } else {
-  //the problem is not acked yet, just update its status to OK
+    //the problem is not acked yet, just update its status to OK
     $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s WHERE id=".$row['id'].";";
 	mysql_query($sql);
   }
 } elseif ((mysql_num_rows($raw)>=1) and ($s==1)) {
   //execute this if we aldeady have this message and received message has problem status
   $row = mysql_fetch_assoc($raw);
-  $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s WHERE id=".$row['id'].";";
+  $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s,last_problem_time=$t WHERE id=".$row['id'].";";
   if (mysql_query($sql)) {
 	  echo "Problem message count +1ned\n";
   } else {
