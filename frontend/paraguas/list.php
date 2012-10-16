@@ -4,15 +4,13 @@ include('head.php');
 
 ?>
 
-<h3>Umbrella monitoring</h3>
-
-<div class=container id=content>
+<div id=content>
 <script src="js/jquery.js"></script>
 
 <?php
 echo date("H:i:s");
 
-$sql = 'SELECT * FROM active ORDER BY first_time DESC';
+$sql = 'SELECT * FROM active WHERE status!=0 OR ack_time=0 ORDER BY first_time DESC';
 
 if (!$raw = mysql_query($sql)) {
 	echo mysql_error();
@@ -29,7 +27,7 @@ $out.='<table class="table table-condensed table-hover">';
 
 $out.='<tr>';
 foreach ($cols as $key=>$val) {
-  $out.='<th>'.$val.'</th>';
+  $out.='<th>'.str_replace("_"," ",strtoupper($val)).'</th>';
 }
 $out.='<td></td></tr>';
 
@@ -37,25 +35,27 @@ foreach ($data as $r) {
   if ($r['severity'] == 5) {
       $data[$r['id']]['btn_color'] = "btn-inverse";
 	  $data[$r['id']]['status_btn_value'] = "DISASTER";
+	  $data[$r['id']]['tr_color'] = "error";
   } elseif ($r['severity'] >= 3) {
       $data[$r['id']]['btn_color'] = "btn-danger";
 	  $data[$r['id']]['status_btn_value'] = "MAJOR";
+	  $data[$r['id']]['tr_color'] = "error";
   } elseif ($r['severity'] >=1) {
       $data[$r['id']]['btn_color'] = "btn-warning";
 	  $data[$r['id']]['status_btn_value'] = "WARNING";
+	  $data[$r['id']]['tr_color'] = "warning";
   }
+  //if status if OK
   if ($r['status'] == 0) {
     $data[$r['id']]['btn_color'] = "btn-success";
 	$data[$r['id']]['status_btn_value'] = "OK";
+	$data[$r['id']]['tr_color'] = "success";
+	$data[$r['id']]['notes'] = $data[$r['id']]['notes_ok'];
   }
 }
 
-//echo '<pre>';
-//print_r($data);
-//echo '</pre>';
-
 foreach ($data as $r) {
-  $out.='<tr>';
+  $out.='<tr class="'.$data[$r['id']]['tr_color'].'">';
   foreach ($cols as $c) {
     if ($c=='severity') {
       $out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r[$c].'</button></td>';
@@ -78,8 +78,8 @@ foreach ($data as $r) {
 	}
   }
   $out.='<td>
-	<a class="btn btn-mini" href="del.php?id='.$r['id'].'">del</a>
-	<a class="btn btn-mini" href="ticket.php?id='.$r['id'].'">create ticket</a></a>
+	<a class="btn btn-mini" href="del.php?id='.$r['id'].'">del</a><br>
+	<a class="btn btn-mini" href="ticket.php?id='.$r['id'].'">create ticket</a></a><br>
 	<a class="btn btn-mini" href="ack.php?id='.$r['id'].'">ack</a></a>
     </td>';
   $out.='</tr>';
@@ -92,8 +92,9 @@ echo $out;
 <!-- refresh part of the page -->
 <script>
 setInterval(function(){
-		$("#content").load("list.php #content");
-		}, 1000);
+	$("#content").load("list.php #content");
+	$("#flash").load("list.php #flash");
+}, 5000);
 </script>
 
 <?php
