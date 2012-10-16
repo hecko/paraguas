@@ -3,11 +3,11 @@
 include("../db.php");
 
 
-$n = $_POST['n'];
+$n = mysql_real_escape_string($_POST['n']);
 $i = $_POST['i'];
 $m = $_POST['m'];
 $s = $_POST['s'];
-$a = $_POST['a'];
+$a = mysql_real_escape_string($_POST['a']);
 $t = time();
 
 //do we already have this kind of messagge in state PROBLEM ?
@@ -32,13 +32,13 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
     }
   } else {
     //the problem is not acked yet, just update its status to OK
-    $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s WHERE id=".$row['id'].";";
+    $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s,notes='$a' WHERE id=".$row['id'].";";
 	mysql_query($sql);
   }
 } elseif ((mysql_num_rows($raw)>=1) and ($s==1)) {
   //execute this if we aldeady have this message and received message has problem status
   $row = mysql_fetch_assoc($raw);
-  $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s,last_problem_time=$t WHERE id=".$row['id'].";";
+  $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s,last_problem_time=$t,notes='$a' WHERE id=".$row['id'].";";
   if (mysql_query($sql)) {
 	  echo "Problem message count +1ned\n";
   } else {
@@ -50,7 +50,7 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
   //is this new message a problem message?
   if ( $s==1 ) {
     //yes, it is - insert it into database
-	$sql = "INSERT INTO active (name,severity,message,status,first_time,last_time,count,notes) VALUES ('$n',$i,'$m',$s,$t,$t,1,'$a')";
+	$sql = "INSERT INTO active (name,severity,message,status,first_time,last_time,first_problem_time,count,notes) VALUES ('$n',$i,'$m',$s,$t,$t,$t,1,'$a')";
 	echo $sql."\n";
 	mysql_query($sql);
 	echo "New problem received.\n";

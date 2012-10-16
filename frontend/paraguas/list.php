@@ -4,11 +4,13 @@ include('head.php');
 
 ?>
 
-<meta http-equiv="refresh" content="3"> 
-
 <h3>Umbrella monitoring</h3>
 
+<div class=container id=content>
+<script src="js/jquery.js"></script>
+
 <?php
+echo date("H:i:s");
 
 $sql = 'SELECT * FROM active ORDER BY first_time DESC';
 
@@ -85,8 +87,15 @@ foreach ($data as $r) {
 $out.='</table>';
 echo $out;
 ?>
-<hr>
-<small>We.Love.Open.Source <em><?php echo date("Y-m-d H:i:s"); ?></em></small>
+</div>
+
+<!-- refresh part of the page -->
+<script>
+setInterval(function(){
+		$("#content").load("list.php #content");
+		}, 1000);
+</script>
+
 <?php
 
 include('foot.php');
