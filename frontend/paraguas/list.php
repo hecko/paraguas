@@ -13,7 +13,7 @@ include('head.php');
 
 echo date("H:i:s");
 
-$sql = 'SELECT * FROM active WHERE status!=0 ORDER BY first_time DESC';
+$sql = 'SELECT * FROM active WHERE status!=0 OR ack_time=0 ORDER BY first_time DESC';
 
 if (!$raw = mysql_query($sql)) {
 	echo mysql_error();

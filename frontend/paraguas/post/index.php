@@ -47,9 +47,9 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
 		echo mysql_error();
 	}
   }
-} elseif ((mysql_num_rows($raw)>=1) and ($s==1)) {
+} elseif ((mysql_num_rows($raw)>=1) and (($s==1) OR ($s==2))) {
   $row = mysql_fetch_assoc($raw);
-  //execute this if we aldeady have this message and received message has problem status
+  //execute this if we aldeady have this message and received message has problem status or is an unpaired message
   //update count as this is a problem message
   $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s,last_problem_time=$t,notes='$a',notes_ok='' WHERE id=".$row['id'].";";
   if (mysql_query($sql)) {
@@ -73,6 +73,14 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
   } elseif ($s==0) {
 	//this is an OK message
 	echo "This is an OK message without matching PROBLEM pair. Ignoring\n";
+  } elseif ($s==2) {
+		echo "Event received!";
+		$sql = "INSERT INTO active (name,severity,message,contact_group,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n',$i,'$m','$contact_group',$s,$t,$t,$t,1,'$a')";
+		if (mysql_query($sql)) {
+			echo "New one-time event received.\n";
+		} else {
+		echo mysql_error();
+		}
   } else {
 	//this will be alter used for log monitoring ets, for now it is just any other status value than 0 or 1
 	echo "We dont know what this message is supposed to do. Ignoring it.";
