@@ -79,7 +79,7 @@ foreach ($data as $r) {
 	  $out.='<td><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
 	} elseif ($c == 'message') {
       $out.='<td><strong>'.$r[$c].'</strong>';
-	  if (($r['notes']!="None") & ($r['notes']!="")) { $out.='<div><pre><em>'.substr($r['notes'],0,80).'...</em></pre></div>'; };
+	  if (($r['notes']!="None") & ($r['notes']!="")) { $out.='<div><a href="event_detail.php?id='.$r['id'].'"><pre><em>'.substr($r['notes'],0,80).'...</em></pre></a></div>'; };
 	  $out.='</td>'."\n";
     } else {
       $out.='<td>'.$r[$c].'</td>';

@@ -15,9 +15,9 @@ $sql = "SELECT id FROM active WHERE name='$n' AND message='$m'";
 $raw = mysql_query($sql);
 
 if ((mysql_num_rows($raw)>=1) and ($s==0)) {
+  $row = mysql_fetch_assoc($raw);
   //execute this if we already have message of this type and received is a OK message
   //is the problem in the database acknowledged?
-  $row = mysql_fetch_assoc($raw);
   if ($row['ack_note'] != "") {
     //delete the row
     while ($row = mysql_fetch_assoc($raw)) {
@@ -33,7 +33,11 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
   } else {
     //the problem is not acked yet, just update its status to OK
     $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s,notes_ok='$a' WHERE id=".$row['id'].";";
-	mysql_query($sql);
+	if (mysql_query($sql)) {
+		echo "Event updated to status OK.\n";
+	} else {
+		echo mysql_error();
+	}
   }
 } elseif ((mysql_num_rows($raw)>=1) and ($s==1)) {
   //execute this if we aldeady have this message and received message has problem status
