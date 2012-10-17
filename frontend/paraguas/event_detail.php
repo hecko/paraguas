@@ -10,11 +10,14 @@ $sql = "SELECT * FROM active WHERE id=$id";
 if ($raw = mysql_query($sql)) {
   $row = mysql_fetch_assoc($raw);
   foreach ($row as $key=>$val) {
-    echo $key.": ".nl2br($val)."<br>";
+	$data[$key] = $val;
   }
 } else {
   echo mysql_error();
 }
+
+echo '<pre>';
+print_r($data);
 
 include('foot.php');
 

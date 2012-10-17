@@ -2,18 +2,18 @@
 
 include('head.php');
 
-//automatically delete OK messages, do not wait for ACKing
-include('clear_ok.php');
-
 ?>
 
 <div id=content>
 <script src="js/jquery.js"></script>
 
 <?php
+//automatically delete OK messages, do not wait for ACKing
+include('clear_ok.php');
+
 echo date("H:i:s");
 
-$sql = 'SELECT * FROM active WHERE status!=0 OR ack_time=0 ORDER BY first_time DESC';
+$sql = 'SELECT * FROM active WHERE status!=0 ORDER BY first_time DESC';
 
 if (!$raw = mysql_query($sql)) {
 	echo mysql_error();
@@ -24,20 +24,16 @@ while ($row = mysql_fetch_assoc($raw)) {
 	$data[$row['id']] = $row;
 }
 
-$cols = array('last_problem_time','name','status','message','first_time','count');
+$cols = array('last_problem_time','name','status','message','contact_group','first_time');
 
 $out.='<table class="table table-condensed table-hover">';
 
+//echo table header
 $out.='<tr>';
 foreach ($cols as $key=>$val) {
-  $out.='<th>'.str_replace("_"," ",strtoupper($val)).'</th>';
+	$out.='<th>'.str_replace("_"," ",strtoupper($val)).'</th>';
 }
 $out.='<td></td></tr>';
-
-if (count($data)<=0) {
-  echo "<br><strong>No events to display.</strong>";
-  die;
-}
 
 foreach ($data as $r) {
   if ($r['severity'] == 5) {
@@ -68,28 +64,42 @@ foreach ($data as $r) {
     if ($c=='severity') {
       $out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r[$c].'</button></td>';
 	} elseif ($c=='status') {
-	  $out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r['status_btn_value'].' ('.$r['severity'].')</button></td>';
-    } elseif (($c == 'first_time') or ($c == 'last_problem_time')) {
-      $r[$c] = date("j.M H:i",$r[$c]);
-	  $out.='<td>'.$r[$c].'</td>';
-	} elseif ($c == 'last_time') {
-  	  $r[$c] = time()-$r[$c]."s";
-	  $out.='<td>'.$r[$c].'</td>';
+		$out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r['status_btn_value'].' ('.$r['severity'].')</button></td>';
+	} elseif ($c == 'last_problem_time') {
+		$r[$c] = date("j.M H:i",$r[$c]);
+		$out.='<td>'.$r[$c].'</td>';
+    	} elseif ($c == 'first_time') {
+		$r[$c] = date("j.M H:i",$r[$c]);
+		$out.='<td>'.$r['count'].' times since<br>'.$r[$c].'</td>';
 	} elseif ($c == 'name') {
-	  $out.='<td><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
+		$out.='<td><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
 	} elseif ($c == 'message') {
-      $out.='<td><strong>'.$r[$c].'</strong>';
-	  if (($r['notes']!="None") & ($r['notes']!="")) { $out.='<div><a href="event_detail.php?id='.$r['id'].'"><pre><em>'.substr($r['notes'],0,80).'...</em></pre></a></div>'; };
-	  $out.='</td>'."\n";
-    } else {
-      $out.='<td>'.$r[$c].'</td>';
+		$out.='<td><strong>'.$r[$c].'</strong>';
+		if (($r['notes']!="None") & ($r['notes']!="")) { 
+			if (strlen($r['notes'])>=79) { 
+				$r['notes'] = substr($r['notes'],0,80).'...';
+			}
+			$out.='<div><a href="event_detail.php?id='.$r['id'].'"><pre><em>'.$r['notes'].'</em></pre></a></div>'; 
+		};
+		$out.='</td>'."\n";
+	} elseif ($c == 'contact_group') {
+		if ($r[$c] != "") {
+			$out.='<td><a class="btn btn-mini" href="ticket.php?id='.$r['id'].'">create ticket for '.$r[$c].'</a><br></td>';
+		} else {
+			$out.='<td><em>Contact is not defined!</em></td>';
+		}
+	} else {
+		$out.='<td>'.$r[$c].'</td>';
 	}
   }
   $out.='<td>
-	<a class="btn btn-mini" href="del.php?id='.$r['id'].'">del</a><br>
-	<a class="btn btn-mini" href="ticket.php?id='.$r['id'].'">create ticket</a></a><br>
-	<a class="btn btn-mini" href="ack.php?id='.$r['id'].'">ack</a></a>
-    </td>';
+	<a class="icon-remove" href="del.php?id='.$r['id'].'"></a><br>';
+	if ($r['ack_time']!=0) {
+		$out.='<a class="btn btn-mini btn-success" href="ack.php?id='.$r['id'].'">acked @'.date("H:i",$r['ack_time']).'</a></a>';
+	} else {
+		$out.='<a class="btn btn-mini btn-warning" href="ack.php?id='.$r['id'].'">ack</a></a>';
+	}
+  $out.='</td>';
   $out.='</tr>';
 }
 $out.='</table>';

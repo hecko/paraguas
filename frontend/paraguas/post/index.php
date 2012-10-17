@@ -2,13 +2,20 @@
 
 include("../db.php");
 
+function get_contact_group($message) {
+	preg_match("/^\[(.*?)\]/",$message,$temp);
+	$ttemp = explode(';',$temp[1]);
+	return $ttemp[0];
+}
 
 $n = mysql_real_escape_string($_POST['n']);
 $i = $_POST['i'];
-$m = $_POST['m'];
+$m = mysql_real_escape_string($_POST['m']);
 $s = $_POST['s'];
 $a = mysql_real_escape_string($_POST['a']);
 $t = time();
+
+$contact_group = get_contact_group($m);
 
 //do we already have this kind of messagge in state PROBLEM ?
 $sql = "SELECT id FROM active WHERE name='$n' AND message='$m'";
@@ -32,7 +39,8 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
     }
   } else {
     //the problem is not acked yet, just update its status to OK
-    $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s,notes_ok='$a' WHERE id=".$row['id'].";";
+    //do not update `count` as `count` should only be for problem messages
+    $sql = "UPDATE active SET last_time=$t,severity=$i,status=$s,notes_ok='$a' WHERE id=".$row['id'].";";
 	if (mysql_query($sql)) {
 		echo "Event updated to status OK.\n";
 	} else {
@@ -40,8 +48,9 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
 	}
   }
 } elseif ((mysql_num_rows($raw)>=1) and ($s==1)) {
-  //execute this if we aldeady have this message and received message has problem status
   $row = mysql_fetch_assoc($raw);
+  //execute this if we aldeady have this message and received message has problem status
+  //update count as this is a problem message
   $sql = "UPDATE active SET count=count+1,last_time=$t,severity=$i,status=$s,last_problem_time=$t,notes='$a',notes_ok='' WHERE id=".$row['id'].";";
   if (mysql_query($sql)) {
 	  echo "Problem message count +1ned\n";
@@ -54,7 +63,7 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
   //is this new message a problem message?
   if ( $s==1 ) {
     //yes, it is - insert it into database
-	$sql = "INSERT INTO active (name,severity,message,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n',$i,'$m',$s,$t,$t,$t,1,'$a')";
+	$sql = "INSERT INTO active (name,severity,message,contact_group,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n',$i,'$m','$contact_group',$s,$t,$t,$t,1,'$a')";
 	echo $sql."\n";
 	if (mysql_query($sql)) {
 		echo "New problem received.\n";
