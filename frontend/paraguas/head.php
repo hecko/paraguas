@@ -4,7 +4,8 @@ session_start();
 ?>
 <html>
 <head>
-<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+  <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+  <title>PARAGUAS</title>
 </head>
 <body>
 <hr>

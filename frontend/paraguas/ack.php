@@ -12,6 +12,6 @@ if (mysql_query($sql)) {
 } else {
 	$_SESSION['flash'] = mysql_error(); 
 }
+header('Location: list.php');
 
 ?>
-<meta http-equiv="refresh" content="1;URL='list.php'">

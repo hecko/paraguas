@@ -40,7 +40,7 @@ params = urllib.urlencode({
 
 headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 
-post = httplib.HTTPConnection(args.server, strict=True, port=80, timeout=5);
+post = httplib.HTTPConnection(args.server, strict=True, port=80);
 post.request("POST", "/paraguas/post/", params, headers)
 ret = post.getresponse()
 print ret.status, ret.reason

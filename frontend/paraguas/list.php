@@ -2,6 +2,9 @@
 
 include('head.php');
 
+//automatically delete OK messages, do not wait for ACKing
+include('clear_ok.php');
+
 ?>
 
 <div id=content>
@@ -31,6 +34,11 @@ foreach ($cols as $key=>$val) {
 }
 $out.='<td></td></tr>';
 
+if (count($data)<=0) {
+  echo "<br><strong>No events to display.</strong>";
+  die;
+}
+
 foreach ($data as $r) {
   if ($r['severity'] == 5) {
       $data[$r['id']]['btn_color'] = "btn-inverse";
@@ -40,7 +48,7 @@ foreach ($data as $r) {
       $data[$r['id']]['btn_color'] = "btn-danger";
 	  $data[$r['id']]['status_btn_value'] = "MAJOR";
 	  $data[$r['id']]['tr_color'] = "error";
-  } elseif ($r['severity'] >=1) {
+  } elseif ($r['severity'] >=0) {
       $data[$r['id']]['btn_color'] = "btn-warning";
 	  $data[$r['id']]['status_btn_value'] = "WARNING";
 	  $data[$r['id']]['tr_color'] = "warning";
@@ -50,7 +58,7 @@ foreach ($data as $r) {
     $data[$r['id']]['btn_color'] = "btn-success";
 	$data[$r['id']]['status_btn_value'] = "OK";
 	$data[$r['id']]['tr_color'] = "success";
-	$data[$r['id']]['notes'] = $data[$r['id']]['notes_ok'];
+	$data[$r['id']]['notes'] = $data[$r['id']]['notes_ok']." ".$data[$r['id']]['notes'];
   }
 }
 
@@ -71,7 +79,7 @@ foreach ($data as $r) {
 	  $out.='<td><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
 	} elseif ($c == 'message') {
       $out.='<td><strong>'.$r[$c].'</strong>';
-	  if ($r['notes']!="None") { $out.='<div><pre><em>'.substr($r['notes'],0,80).'...</em></pre></div>'; };
+	  if (($r['notes']!="None") & ($r['notes']!="")) { $out.='<div><pre><em>'.substr($r['notes'],0,80).'...</em></pre></div>'; };
 	  $out.='</td>'."\n";
     } else {
       $out.='<td>'.$r[$c].'</td>';
