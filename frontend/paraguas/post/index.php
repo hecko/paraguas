@@ -3,11 +3,15 @@
 include("../db.php");
 
 function get_contact_group($message) {
+	// function tries to get contact group from events message
 	preg_match("/^\[(.*?)\]/",$message,$temp);
 	$ttemp = explode(';',$temp[1]);
 	return $ttemp[0];
 }
 
+print_r($_POST);
+
+$g = mysql_real_escape_string($_POST['g']);
 $n = mysql_real_escape_string($_POST['n']);
 $i = $_POST['i'];
 $m = mysql_real_escape_string($_POST['m']);
@@ -15,7 +19,9 @@ $s = $_POST['s'];
 $a = mysql_real_escape_string($_POST['a']);
 $t = time();
 
-$contact_group = get_contact_group($m);
+if ($g=="") {
+	$g = get_contact_group($m);
+}
 
 //do we already have this kind of messagge in state PROBLEM ?
 $sql = "SELECT id FROM active WHERE name='$n' AND message='$m'";
@@ -44,6 +50,7 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
 	if (mysql_query($sql)) {
 		echo "Event updated to status OK.\n";
 	} else {
+		echo $sql."\n";
 		echo mysql_error();
 	}
   }
@@ -55,38 +62,30 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
   if (mysql_query($sql)) {
 	  echo "Problem message count +1ned\n";
   } else {
-	  echo "Problem updating problem count\n";
+	  echo $sql."\n";
 	  echo mysql_error();
   }
 } else {
   //execute this if we do not have this message in problem status in database already
-  //is this new message a problem message?
-  if ( $s==1 ) {
+  //is this new message a problem message or one-time event?
+  if (($s==1) OR ($s==2)) {
     //yes, it is - insert it into database
-	$sql = "INSERT INTO active (name,severity,message,contact_group,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n',$i,'$m','$contact_group',$s,$t,$t,$t,1,'$a')";
-	echo $sql."\n";
+	$sql = "INSERT INTO active (name,severity,message,contact_group,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n',$i,'$m','$g',$s,$t,$t,$t,1,'$a')";
 	if (mysql_query($sql)) {
 		echo "New problem received.\n";
 	} else {
+		echo $sql."\n";
 		echo mysql_error();
 	}
   } elseif ($s==0) {
 	//this is an OK message
 	echo "This is an OK message without matching PROBLEM pair. Ignoring\n";
-  } elseif ($s==2) {
-		echo "Event received!";
-		$sql = "INSERT INTO active (name,severity,message,contact_group,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n',$i,'$m','$contact_group',$s,$t,$t,$t,1,'$a')";
-		if (mysql_query($sql)) {
-			echo "New one-time event received.\n";
-		} else {
-		echo mysql_error();
-		}
   } else {
 	//this will be alter used for log monitoring ets, for now it is just any other status value than 0 or 1
 	echo "We dont know what this message is supposed to do. Ignoring it.";
   }
 }
 
-echo "Done\n";
+echo "Done";
 
 ?>
