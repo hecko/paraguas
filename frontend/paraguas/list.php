@@ -9,7 +9,7 @@ include('head.php');
 
 <?php
 //automatically delete OK messages, do not wait for ACKing
-include('clear_ok.php');
+//include('clear_ok.php');
 
 echo date("H:i:s");
 
@@ -25,6 +25,8 @@ while ($row = mysql_fetch_assoc($raw)) {
 }
 
 $cols = array('last_problem_time','name','status','message','contact_group','first_time');
+$cols = array('status','message','contact_group','first_time','last_problem_time');
+
 
 $out.='<table class="table table-condensed table-hover">';
 
@@ -64,17 +66,17 @@ foreach ($data as $r) {
     if ($c=='severity') {
       $out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r[$c].'</button></td>';
 	} elseif ($c=='status') {
-		$out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r['status_btn_value'].' ('.$r['severity'].')</button></td>';
+		$out.='<td><button class="btn btn-small '.$r['btn_color'].'" style="height: 40px;">'.$r['status_btn_value'].'_('.$r['severity'].')</button></td>';
 	} elseif ($c == 'last_problem_time') {
 		$r[$c] = date("j.M H:i",$r[$c]);
 		$out.='<td>'.$r[$c].'</td>';
     	} elseif ($c == 'first_time') {
 		$r[$c] = date("j.M H:i",$r[$c]);
-		$out.='<td>'.$r['count'].' times since<br>'.$r[$c].'</td>';
+		$out.='<td>'.$r['count'].'x since<br>'.$r[$c].'</td>';
 	} elseif ($c == 'name') {
 		$out.='<td><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
 	} elseif ($c == 'message') {
-		$out.='<td><strong>'.$r[$c].'</strong>';
+		$out.='<td><strong><a href="">'.$r['name'].'</a>: '.$r[$c].'</strong>';
 		if (($r['notes']!="None") & ($r['notes']!="")) { 
 			if (strlen($r['notes'])>=79) { 
 				$r['notes'] = substr($r['notes'],0,80).'...';
@@ -84,7 +86,7 @@ foreach ($data as $r) {
 		$out.='</td>'."\n";
 	} elseif ($c == 'contact_group') {
 		if ($r[$c] != "") {
-			$out.='<td><a class="btn btn-mini" href="ticket.php?id='.$r['id'].'">create ticket for '.$r[$c].'</a><br></td>';
+			$out.='<td><a class="btn btn-mini" href="ticket.php?id='.$r['id'].'">create ticket for '.strtoupper($r[$c]).'</a><br></td>';
 		} else {
 			$out.='<td><em>Contact is not defined!</em></td>';
 		}
