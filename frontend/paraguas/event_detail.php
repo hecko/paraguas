@@ -18,6 +18,7 @@ if ($raw = mysql_query($sql)) {
 
 echo '<pre>';
 print_r($data);
+echo '</pre>';
 
 include('foot.php');
 

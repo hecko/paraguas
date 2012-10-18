@@ -14,10 +14,11 @@ print_r($_POST);
 $g = mysql_real_escape_string($_POST['g']);
 $n = mysql_real_escape_string($_POST['n']);
 $i = $_POST['i'];
-$m = mysql_real_escape_string($_POST['m']);
+$m = trim(mysql_real_escape_string($_POST['m']));
 $s = $_POST['s'];
-$a = mysql_real_escape_string($_POST['a']);
+$a = trim(mysql_real_escape_string($_POST['a']));
 $t = time();
+$x = mysql_real_escape_string($_POST['x']);
 
 if ($g=="") {
 	$g = get_contact_group($m);
@@ -70,7 +71,7 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
   //is this new message a problem message or one-time event?
   if (($s==1) OR ($s==2)) {
     //yes, it is - insert it into database
-	$sql = "INSERT INTO active (name,severity,message,contact_group,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n',$i,'$m','$g',$s,$t,$t,$t,1,'$a')";
+	$sql = "INSERT INTO active (name,source,severity,message,contact_group,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n','$x',$i,'$m','$g',$s,$t,$t,$t,1,'$a')";
 	if (mysql_query($sql)) {
 		echo "New problem received.\n";
 	} else {
