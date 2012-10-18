@@ -24,7 +24,7 @@ while ($row = mysql_fetch_assoc($raw)) {
 	$data[$row['id']] = $row;
 }
 
-$cols = array('status','contact_group','first_time','last_problem_time');
+$cols = array('status','message','contact_group','first_time','last_problem_time');
 
 
 $out.='<table class="table table-condensed table-hover">';
@@ -32,30 +32,36 @@ $out.='<table class="table table-condensed table-hover">';
 //echo table header
 $out.='<tr>';
 foreach ($cols as $key=>$val) {
+	if ($val == 'last_problem_time') {
+		$val = 'age';
+	}
 	$out.='<th>'.str_replace("_"," ",strtoupper($val)).'</th>';
 }
 $out.='<td></td></tr>';
 
 foreach ($data as $r) {
+	if (strtolower(trim($r['source'])) == 'none') {
+		$data[$r['id']]['source'] = '';
+	}
   if ($r['severity'] == 5) {
       $data[$r['id']]['btn_color'] = "btn-inverse";
-	  $data[$r['id']]['status_btn_value'] = "DISASTER";
+	  $data[$r['id']]['status_btn_value'] = "D";
 	  $data[$r['id']]['tr_color'] = "error";
   } elseif ($r['severity'] == 4) {
       $data[$r['id']]['btn_color'] = "btn-danger";
-          $data[$r['id']]['status_btn_value'] = "CRITICAL";
+          $data[$r['id']]['status_btn_value'] = "C";
           $data[$r['id']]['tr_color'] = "error";
   } elseif ($r['severity'] == 3) {
       $data[$r['id']]['btn_color'] = "btn-orange";
-	  $data[$r['id']]['status_btn_value'] = "MINOR";
+	  $data[$r['id']]['status_btn_value'] = "M";
 	  $data[$r['id']]['tr_color'] = "error";
   } elseif ($r['severity'] == 2) {
       $data[$r['id']]['btn_color'] = "btn-warning";
-          $data[$r['id']]['status_btn_value'] = "WARNING";
+          $data[$r['id']]['status_btn_value'] = "W";
           $data[$r['id']]['tr_color'] = "error";
   } elseif ($r['severity'] == 1) {
       $data[$r['id']]['btn_color'] = "btn-info";
-	  $data[$r['id']]['status_btn_value'] = "INFO";
+	  $data[$r['id']]['status_btn_value'] = "I";
 	  $data[$r['id']]['tr_color'] = "warning";
   } else {
 	//default button for not classified (0) and unknown severities 
@@ -73,41 +79,39 @@ foreach ($data as $r) {
 }
 
 foreach ($data as $r) {
-  $out.='<tr class="'.$data[$r['id']]['tr_color'].'">';
-	$out.='<td colspan=6><hr><em>'.$r['source_ip'].' '.$r['source'].'</em><strong> <a href="">'.$r['name'].'</a>: '.$r['message'].'</strong>';
-	if (($r['notes']!="None") & ($r['notes']!="")) {
-		if (strlen($r['notes'])>=149) {
-			$r['notes'] = substr($r['notes'],0,150).'...';
-		}
-		$out.='<div><a href="event_detail.php?id='.$r['id'].'"><pre><em>'.trim($r['notes']).'</em></pre></a></div>';
-	};
-	$out.='</td>'."\n";
   $out.='</tr>';
   $out.='<tr class="'.$data[$r['id']]['tr_color'].'">';
   foreach ($cols as $c) {
-    if ($c=='severity') {
-      $out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r[$c].'</button></td>';
-	} elseif ($c=='status') {
-		$out.='<td><button class="btn btn-small '.$r['btn_color'].'" style="height: 40px;">'.$r['status_btn_value'].'_'.$r['severity'].'</button></td>';
+	if ($c=='status') {
+		$out.='<td style="vertical-align: middle"><button class="btn btn-small '.$r['btn_color'].'" style="height: 40px;">'.$r['status_btn_value'].'-'.$r['severity'].'</button></td>';
+	} elseif ($c == 'message') {
+		$out.='<td><em>'.$r['source_ip'].' '.$r['source'].'</em><strong> <a href="">'.$r['name'].'</a>: '.$r['message'].'</strong>';
+		if (($r['notes']!="None") & ($r['notes']!="")) {
+			if (strlen($r['notes'])>=79) {
+				$r['notes'] = substr($r['notes'],0,80).'...';
+			}
+			$out.='<div><a href="event_detail.php?id='.$r['id'].'"><pre><em>'.trim($r['notes']).'</em></pre></a></div>';
+		};
+		$out.='</td>'."\n";
 	} elseif ($c == 'last_problem_time') {
 		$r[$c] = (time()-$r[$c])/3600;
-		$out.='<td>'.round($r[$c],1).'h ago</td>';
-    	} elseif ($c == 'first_time') {
+		$out.='<td style="vertical-align: middle">'.round($r[$c],1).'h</td>';
+	} elseif ($c == 'first_time') {
 		$r[$c] = date("j.M H:i",$r[$c]);
-		$out.='<td>'.$r['count'].'x since<br>'.$r[$c].'</td>';
+		$out.='<td style="vertical-align: middle">'.$r['count'].'x since<br>'.$r[$c].'</td>';
 	} elseif ($c == 'name') {
-		$out.='<td><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
+		$out.='<td style="vertical-align: middle"><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
 	} elseif ($c == 'contact_group') {
-		if ($r[$c] != "") {
-			$out.='<td><a class="btn btn-mini" href="ticket.php?id='.$r['id'].'">create ticket for '.strtoupper($r[$c]).'</a><br></td>';
+		if (($r[$c] != "") & (strtolower($r[$c]) != 'none')) {
+			$out.='<td style="vertical-align: middle"><a class="btn btn-small" href="ticket.php?id='.$r['id'].'">create ticket for '.strtoupper($r[$c]).'</a><br></td>';
 		} else {
-			$out.='<td><em>Contact is not defined!</em></td>';
+			$out.='<td style="vertical-align: middle"><em>Contact group is not defined!</em></td>';
 		}
 	} else {
 		$out.='<td>'.$r[$c].'</td>';
 	}
   }
-  $out.='<td>
+  $out.='<td style="vertical-align: middle; text-align: center;">
 	<a class="icon-remove" href="del.php?id='.$r['id'].'"></a><br>';
 	if ($r['ack_time']!=0) {
 		$out.='<a class="btn btn-mini btn-success" href="ack.php?id='.$r['id'].'">acked @'.date("H:i",$r['ack_time']).'</a>';
