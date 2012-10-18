@@ -24,8 +24,7 @@ while ($row = mysql_fetch_assoc($raw)) {
 	$data[$row['id']] = $row;
 }
 
-$cols = array('last_problem_time','name','status','message','contact_group','first_time');
-$cols = array('status','message','contact_group','first_time','last_problem_time');
+$cols = array('status','contact_group','first_time','last_problem_time');
 
 
 $out.='<table class="table table-condensed table-hover">';
@@ -75,28 +74,29 @@ foreach ($data as $r) {
 
 foreach ($data as $r) {
   $out.='<tr class="'.$data[$r['id']]['tr_color'].'">';
+	$out.='<td colspan=6><hr><em>'.$r['source_ip'].' '.$r['source'].'</em><strong> <a href="">'.$r['name'].'</a>: '.$r[$c].'</strong>';
+	if (($r['notes']!="None") & ($r['notes']!="")) {
+		if (strlen($r['notes'])>=149) {
+			$r['notes'] = substr($r['notes'],0,150).'...';
+		}
+		$out.='<div><a href="event_detail.php?id='.$r['id'].'"><pre><em>'.trim($r['notes']).'</em></pre></a></div>';
+	};
+	$out.='</td>'."\n";
+  $out.='</tr>';
+  $out.='<tr class="'.$data[$r['id']]['tr_color'].'">';
   foreach ($cols as $c) {
     if ($c=='severity') {
       $out.='<td><button class="btn btn-mini '.$r['btn_color'].'">'.$r[$c].'</button></td>';
 	} elseif ($c=='status') {
 		$out.='<td><button class="btn btn-small '.$r['btn_color'].'" style="height: 40px;">'.$r['status_btn_value'].'_'.$r['severity'].'</button></td>';
 	} elseif ($c == 'last_problem_time') {
-		$r[$c] = date("j.M H:i",$r[$c]);
-		$out.='<td>'.$r[$c].'</td>';
+		$r[$c] = (time()-$r[$c])/3600;
+		$out.='<td>'.round($r[$c],1).'h ago</td>';
     	} elseif ($c == 'first_time') {
 		$r[$c] = date("j.M H:i",$r[$c]);
 		$out.='<td>'.$r['count'].'x since<br>'.$r[$c].'</td>';
 	} elseif ($c == 'name') {
 		$out.='<td><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
-	} elseif ($c == 'message') {
-		$out.='<td><em>'.$r['source'].'</em><strong> <a href="">'.$r['name'].'</a>: '.$r[$c].'</strong>';
-		if (($r['notes']!="None") & ($r['notes']!="")) { 
-			if (strlen($r['notes'])>=79) { 
-				$r['notes'] = substr($r['notes'],0,80).'...';
-			}
-			$out.='<div><a href="event_detail.php?id='.$r['id'].'"><pre><em>'.trim($r['notes']).'</em></pre></a></div>'; 
-		};
-		$out.='</td>'."\n";
 	} elseif ($c == 'contact_group') {
 		if ($r[$c] != "") {
 			$out.='<td><a class="btn btn-mini" href="ticket.php?id='.$r['id'].'">create ticket for '.strtoupper($r[$c]).'</a><br></td>';
@@ -127,7 +127,7 @@ echo $out;
 setInterval(function(){
 	$("#content").load("list.php #content");
 	$("#flash").load("list.php #flash");
-}, 5000);
+}, 2000);
 </script>
 
 <?php

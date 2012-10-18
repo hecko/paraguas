@@ -19,6 +19,7 @@ $s = $_POST['s'];
 $a = trim(mysql_real_escape_string($_POST['a']));
 $t = time();
 $x = mysql_real_escape_string($_POST['x']);
+$source_ip = $_SERVER['REMOTE_ADDR'];
 
 if ($g=="") {
 	$g = get_contact_group($m);
@@ -71,7 +72,7 @@ if ((mysql_num_rows($raw)>=1) and ($s==0)) {
   //is this new message a problem message or one-time event?
   if (($s==1) OR ($s==2)) {
     //yes, it is - insert it into database
-	$sql = "INSERT INTO active (name,source,severity,message,contact_group,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n','$x',$i,'$m','$g',$s,$t,$t,$t,1,'$a')";
+	$sql = "INSERT INTO active (name,source,source_ip,severity,message,contact_group,status,first_time,last_time,last_problem_time,count,notes) VALUES ('$n','$x','$source_ip',$i,'$m','$g',$s,$t,$t,$t,1,'$a')";
 	if (mysql_query($sql)) {
 		echo "New problem received.\n";
 	} else {
