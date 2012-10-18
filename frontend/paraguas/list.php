@@ -74,7 +74,7 @@ foreach ($data as $r) {
 
 foreach ($data as $r) {
   $out.='<tr class="'.$data[$r['id']]['tr_color'].'">';
-	$out.='<td colspan=6><hr><em>'.$r['source_ip'].' '.$r['source'].'</em><strong> <a href="">'.$r['name'].'</a>: '.$r[$c].'</strong>';
+	$out.='<td colspan=6><hr><em>'.$r['source_ip'].' '.$r['source'].'</em><strong> <a href="">'.$r['name'].'</a>: '.$r['message'].'</strong>';
 	if (($r['notes']!="None") & ($r['notes']!="")) {
 		if (strlen($r['notes'])>=149) {
 			$r['notes'] = substr($r['notes'],0,150).'...';
