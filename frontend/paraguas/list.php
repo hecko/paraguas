@@ -10,11 +10,12 @@ include('head.php');
 <?php
 //automatically delete OK messages, do not wait for ACKing
 //include('clear_ok.php');
+include('archive.php');
 
 echo date("H:i:s");
 
-//select all events which are not both ACKed and OK
-$sql = 'SELECT * FROM active WHERE status!=0 OR ack_time=0 ORDER BY first_time DESC';
+//select all events which are not archived
+$sql = 'SELECT * FROM active WHERE archived=0 ORDER BY first_time DESC';
 
 if (!$raw = mysql_query($sql)) {
 	echo mysql_error();
@@ -44,7 +45,7 @@ foreach ($cols as $key=>$val) {
 	}
 	$out.='<th>'.str_replace("_"," ",strtoupper($val)).'</th>';
 }
-$out.='<td></td></tr>';
+$out.='<th>ACTION</th></tr>';
 
 foreach ($data as $r) {
 	if (strtolower(trim($r['source'])) == 'none') {

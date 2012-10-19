@@ -25,8 +25,8 @@ if (($g=="") or (trim(strtolower($g))=="none")) {
 	$g = get_contact_group($m);
 }
 
-//do we already have this kind of messagge in state PROBLEM ?
-$sql = "SELECT id FROM active WHERE name='$n' AND message='$m'";
+//do we already have this kind of messagge in state PROBLEM which is not archived?
+$sql = "SELECT id FROM active WHERE name='$n' AND message='$m' AND archived!=1";
 $raw = mysql_query($sql);
 
 if ((mysql_num_rows($raw)>=1) and ($s==0)) {

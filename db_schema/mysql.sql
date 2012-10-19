@@ -18,6 +18,7 @@ CREATE TABLE `active` (
   `ack_time` bigint(20) NOT NULL,
   `ack_note` varchar(128) collate utf8_unicode_ci NOT NULL,
   `source_ip` varchar(15) collate utf8_unicode_ci NOT NULL,
+  `archived` tinyint(1) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
