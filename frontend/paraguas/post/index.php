@@ -21,7 +21,7 @@ $t = time();
 $x = mysql_real_escape_string($_POST['x']);
 $source_ip = $_SERVER['REMOTE_ADDR'];
 
-if ($g=="") {
+if (($g=="") or (trim(strtolower($g))=="none")) {
 	$g = get_contact_group($m);
 }
 

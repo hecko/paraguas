@@ -5,7 +5,7 @@ session_start();
 <html>
 <head>
   <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
-  <title>PARAGUAS</title>
+  <title>Paraguas</title>
 </head>
 <body>
 <hr>
