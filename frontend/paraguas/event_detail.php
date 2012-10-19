@@ -19,6 +19,10 @@ if ($raw = mysql_query($sql)) {
 echo '<pre>';
 print_r($data);
 echo '</pre>';
+?>
+<hr>
+<a class="btn btn-small" href="email.php?id=<?php echo $id ?>">email</a>
+<?
 
 include('foot.php');
 
