@@ -9,10 +9,11 @@ include('head.php');
 
 <?php
 //automatically delete OK messages, do not wait for ACKing
-include('clear_ok.php');
+//include('clear_ok.php');
 
 echo date("H:i:s");
 
+//select all events which are not both ACKed and OK
 $sql = 'SELECT * FROM active WHERE status!=0 OR ack_time=0 ORDER BY first_time DESC';
 
 if (!$raw = mysql_query($sql)) {
@@ -33,10 +34,13 @@ $out.='<table class="table table-condensed table-hover table-bordered">';
 $out.='<tr>';
 foreach ($cols as $key=>$val) {
 	if ($val == 'last_problem_time') {
-		$val = 'age';
+		$val = 'last';
 	}
 	if ($val == 'contact_group') {
 		$val = 'SOLVER';
+	}
+	if ($val == 'status') {
+		$val = 'S';
 	}
 	$out.='<th>'.str_replace("_"," ",strtoupper($val)).'</th>';
 }
@@ -69,7 +73,7 @@ foreach ($data as $r) {
   } else {
 	//default button for not classified (0) and unknown severities 
 	$data[$r['id']]['btn_color'] = "";
-	$data[$r['id']]['status_btn_value'] = "N/A";
+	$data[$r['id']]['status_btn_value'] = "N";
 	$data[$r['id']]['tr_color'] = "";
   }
   //if status is OK
@@ -86,7 +90,7 @@ foreach ($data as $r) {
   $out.='<tr class="'.$data[$r['id']]['tr_color'].'">';
   foreach ($cols as $c) {
 	if ($c=='status') {
-		$out.='<td style="vertical-align: middle"><button class="btn btn-small '.$r['btn_color'].'" style="height: 40px;">'.$r['status_btn_value'].'-'.$r['severity'].'</button></td>';
+		$out.='<td style="vertical-align: middle; text-align: center"><button class="btn btn-small '.$r['btn_color'].'" style="height: 40px;">'.$r['status_btn_value'].'-'.$r['severity'].'</button></td>';
 	} elseif ($c == 'message') {
 		$out.='<td><em>'.$r['source_ip'].' '.$r['source'].'</em><strong> <a href="">'.$r['name'].'</a>: '.$r['message'].'</strong>';
 		if (($r['notes']!="None") & ($r['notes']!="")) {
@@ -100,8 +104,8 @@ foreach ($data as $r) {
 		$r[$c] = (time()-$r[$c])/3600;
 		$out.='<td style="vertical-align: middle">'.round($r[$c],1).'h</td>';
 	} elseif ($c == 'first_time') {
-		$r[$c] = date("j.M H:i",$r[$c]);
-		$out.='<td style="vertical-align: middle">'.$r['count'].'x since<br>'.$r[$c].'</td>';
+		$r['first_time_human'] = date("j.M H:i",$r[$c]);
+		$out.='<td style="vertical-align: middle">'.$r['count'].'x since<br>'.$r['first_time_human'].'<br>('.round((time()-$r['first_time'])/3600,1).'h)</td>';
 	} elseif ($c == 'name') {
 		$out.='<td style="vertical-align: middle"><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
 	} elseif ($c == 'contact_group') {
