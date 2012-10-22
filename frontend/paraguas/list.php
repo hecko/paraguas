@@ -38,14 +38,14 @@ foreach ($cols as $key=>$val) {
 		$val = 'last';
 	}
 	if ($val == 'contact_group') {
-		$val = 'SOLVER';
+		$val = 'solver';
 	}
 	if ($val == 'status') {
-		$val = 'S';
+		$val = 'sta';
 	}
-	$out.='<th>'.str_replace("_"," ",strtoupper($val)).'</th>';
+	$out.='<th style="text-align: center">'.str_replace("_"," ",strtoupper($val)).'</th>';
 }
-$out.='<th>ACTION</th></tr>';
+$out.='<th style="text-align: center">ACTION</th></tr>';
 
 foreach ($data as $r) {
 	if (strtolower(trim($r['source'])) == 'none') {

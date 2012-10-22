@@ -22,7 +22,7 @@ if ($raw = mysql_query($sql)) {
 		$data[$key] = date("d.M Y H:i:s",$val).' ('.$val.')';
 	}
 	if ($key=='notes' or $key=='name' or $key=='message') {
-		$data[$key] = '<strong>'.$val.'</strong>';
+		$data[$key] = '<strong>'.nl2br($val).'</strong>';
 	}
 	if ($key=='count') {
 		$data[$key] = $val.'x';
