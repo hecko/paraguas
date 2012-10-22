@@ -113,7 +113,7 @@ foreach ($data as $r) {
 		if (($r[$c] != "") & (strtolower($r[$c]) != 'none')) {
 			$out.='<td style="vertical-align: middle; text-align: center;"><a class="btn btn-small" href="ticket.php?id='.$r['id'].'">'.strtoupper($r[$c]).'</a><br>';
 		} else {
-			$out.='<td style="vertical-align: middle"><em>Contact group is not defined!</em>';
+			$out.='<td style="vertical-align: middle; text-align: center;"><em>Contact group is not defined!</em>';
 		}
 		$out.='<a class="btn btn-small" href="email.php?id='.$r['id'].'">email</a>';
 		$out.='</td>';

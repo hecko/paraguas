@@ -5,11 +5,20 @@ $emails = explode(',', $_POST['emails']);
 $message = $_POST['body'];
 $subject = $_POST['subject'];
 
-echo "Emails: ".$emails."<hr>";
+echo "<pre>Emails: ";
+print_r($emails);
+echo '</pre>'."<hr>";
+
+$headers = 'From: '.$from_email. "\r\n" .
+    'Reply-To: '.$from_email;
+
+echo '<pre>';
+echo $headers;
+echo '</pre>';
 
 foreach ($emails as $email) {
 	echo 'Sending to '.$email."<br>";
-	mail($email,$subject,"$message");
+	mail($email,$subject,"$message",$headers);
 }
 ?>
 <hr>
