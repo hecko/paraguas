@@ -38,14 +38,14 @@ foreach ($cols as $key=>$val) {
 		$val = 'last';
 	}
 	if ($val == 'contact_group') {
-		$val = 'SOLVER';
+		$val = 'solver';
 	}
 	if ($val == 'status') {
-		$val = 'S';
+		$val = 'sta';
 	}
-	$out.='<th>'.str_replace("_"," ",strtoupper($val)).'</th>';
+	$out.='<th style="text-align: center">'.str_replace("_"," ",strtoupper($val)).'</th>';
 }
-$out.='<th>ACTION</th></tr>';
+$out.='<th style="text-align: center">ACTION</th></tr>';
 
 foreach ($data as $r) {
 	if (strtolower(trim($r['source'])) == 'none') {
@@ -113,7 +113,7 @@ foreach ($data as $r) {
 		if (($r[$c] != "") & (strtolower($r[$c]) != 'none')) {
 			$out.='<td style="vertical-align: middle; text-align: center;"><a class="btn btn-small" href="ticket.php?id='.$r['id'].'">'.strtoupper($r[$c]).'</a>';
 		} else {
-			$out.='<td style="vertical-align: middle"><em>Contact group is not defined!</em>';
+			$out.='<td style="vertical-align: middle; text-align: center;"><em>Contact group is not defined!</em>';
 		}
 		$out.='<br><a class="btn btn-small" href="email.php?id='.$r['id'].'">email</a>';
 		$out.='</td>';
