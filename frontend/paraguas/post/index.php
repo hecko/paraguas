@@ -1,5 +1,13 @@
 <?php
 
+print_r($_POST);
+print_r($_GET);
+
+require '../lib/KLogger.php';
+
+$log = KLogger::instance(dirname(__FILE__)."/log", KLogger::DEBUG);
+$log->logInfo('Info Test');
+
 include("../db.php");
 
 function get_contact_group($message) {
@@ -9,7 +17,8 @@ function get_contact_group($message) {
 	return $ttemp[0];
 }
 
-print_r($_POST);
+$log->logInfo("Post array: ",$_REQUEST);
+$log->logInfo("Message: ",$_REQUEST['m']);
 
 $g = mysql_real_escape_string($_POST['g']);
 $n = mysql_real_escape_string($_POST['n']);

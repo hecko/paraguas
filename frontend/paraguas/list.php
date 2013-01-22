@@ -111,11 +111,11 @@ foreach ($data as $r) {
 		$out.='<td style="vertical-align: middle"><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
 	} elseif ($c == 'contact_group') {
 		if (($r[$c] != "") & (strtolower($r[$c]) != 'none')) {
-			$out.='<td style="vertical-align: middle; text-align: center;"><a class="btn btn-small" href="ticket.php?id='.$r['id'].'">'.strtoupper($r[$c]).'</a><br>';
+			$out.='<td style="vertical-align: middle; text-align: center;"><a class="btn btn-small" href="ticket.php?id='.$r['id'].'">'.strtoupper($r[$c]).'</a>';
 		} else {
 			$out.='<td style="vertical-align: middle"><em>Contact group is not defined!</em>';
 		}
-		$out.='<a class="btn btn-small" href="email.php?id='.$r['id'].'">email</a>';
+		$out.='<br><a class="btn btn-small" href="email.php?id='.$r['id'].'">email</a>';
 		$out.='</td>';
 	} else {
 		$out.='<td>'.$r[$c].'</td>';
