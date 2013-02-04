@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-mysql_connect('localhost','zabbix','xxx');
+mysql_connect('localhost','zabbix','mongr3l21');
 mysql_select_db('zabbix');
 mysql_set_charset('utf8');
 
@@ -12,10 +12,10 @@ while ($r = mysql_fetch_assoc($raw)) {
   if ($r['value'] == 1) { //if value is not OK=0, PROBLEM=1
 	$fields_string = '';
     $fields = array();
-    $fields['n'] = urlencode('zabbix_db_sync');
-    $fields['i'] = urlencode('4');
-    $fields['m'] = urlencode($r['description']);
-    $fields['s'] = urlencode($r['value']); //if value is not OK=0, PROBLEM=1
+    $fields['n'] = 'zabbix_db_sync';
+    $fields['i'] = '4';
+    $fields['m'] = $r['description'];
+    $fields['s'] = $r['value']; //if value is not OK=0, PROBLEM=1
     $data = http_build_query($fields);
 	echo $data."\n";
 

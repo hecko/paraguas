@@ -8,9 +8,11 @@ include('head.php');
 <script src="js/jquery.js"></script>
 
 <?php
+//default behavior: show all messages, only remove those which are OK and ACKed
 //automatically delete OK messages, do not wait for ACKing
 //include('clear_ok.php');
-include('archive.php');
+//automatically move OK messages to archive
+//include('archive.php');
 
 echo date("H:i:s");
 
@@ -26,7 +28,7 @@ while ($row = mysql_fetch_assoc($raw)) {
 	$data[$row['id']] = $row;
 }
 
-$cols = array('status','message','contact_group','first_time','last_problem_time');
+$cols = array('message','first_time','last_problem_time');
 
 
 $out.='<table class="table table-condensed table-hover table-bordered">';
@@ -93,20 +95,23 @@ foreach ($data as $r) {
 	if ($c=='status') {
 		$out.='<td style="vertical-align: middle; text-align: center"><button class="btn btn-small '.$r['btn_color'].'" style="height: 40px;">'.$r['status_btn_value'].'-'.$r['severity'].'</button></td>';
 	} elseif ($c == 'message') {
-		$out.='<td><em>'.$r['source_ip'].' '.$r['source'].'</em><strong> <a href="">'.$r['name'].'</a>: '.$r['message'].'</strong>';
+		$out.='<td><em>'.$r['source_ip'].' '.$r['source'].'</em><strong>'.$r['name'].'</strong>: ';
 		if (($r['notes']!="None") & ($r['notes']!="")) {
 			if (strlen($r['notes'])>=72) {
 				$r['notes'] = substr($r['notes'],0,73).'...';
 			}
-			$out.='<div><a href="event_detail.php?id='.$r['id'].'"><pre><em>'.trim($r['notes']).'</em></pre></a></div>';
+			$out.='<a href="event_detail.php?id='.$r['id'].'">'.$r['message'].'</a>';
+			//$out.='<div><a href="event_detail.php?id='.$r['id'].'"><pre><em>'.trim($r['notes']).'</em></pre></a></div>';
+		} else {
+			$out.=$r['message'];
 		};
 		$out.='</td>'."\n";
 	} elseif ($c == 'last_problem_time') {
 		$r[$c] = (time()-$r[$c])/3600;
-		$out.='<td style="vertical-align: middle">'.round($r[$c],1).'h</td>';
+		$out.='<td style="vertical-align: middle; text-align: right">'.round($r[$c],1).'h</td>';
 	} elseif ($c == 'first_time') {
 		$r['first_time_human'] = date("j.M H:i",$r[$c]);
-		$out.='<td style="vertical-align: middle">'.$r['count'].'x since<br>'.$r['first_time_human'].'<br>('.round((time()-$r['first_time'])/3600,1).'h)</td>';
+		$out.='<td style="vertical-align: middle; text-align: right">('.$r['count'].'x) '.$r['first_time_human'].'</td>';
 	} elseif ($c == 'name') {
 		$out.='<td style="vertical-align: middle"><strong><a href="">'.$r[$c].'</a></strong></td>'."\n";
 	} elseif ($c == 'contact_group') {
@@ -122,12 +127,13 @@ foreach ($data as $r) {
 	}
   }
   $out.='<td style="vertical-align: middle; text-align: center;">
-	<a class="icon-remove" href="del.php?id='.$r['id'].'"></a><br>';
+	<a class="icon-remove" href="del.php?id='.$r['id'].'"></a>';
 	if ($r['ack_time']!=0) {
-		$out.='<a class="btn btn-mini btn-success" href="ack.php?id='.$r['id'].'">acked @'.date("H:i",$r['ack_time']).'</a>';
+		$out.='<a class="icon-thumbs-up" href="ack.php?id='.$r['id'].'"></a>';
 	} else {
-		$out.='<a class="btn btn-mini btn-warning" href="ack.php?id='.$r['id'].'">ack</a>';
+		$out.='<a class="icon-hand-up" href="ack.php?id='.$r['id'].'"></a>';
 	}
+	$out.='<a class="icon-info-sign" href="event_detail.php?id='.$r['id'].'">i</a>';
   $out.='</td>';
   $out.='</tr>';
 }
