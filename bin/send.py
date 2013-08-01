@@ -5,6 +5,7 @@ import urllib
 import httplib
 #import os
 #os.system('echo "hello world"')
+# or preffered : http://docs.python.org/2/library/subprocess.html
 
 parser = argparse.ArgumentParser()
 
