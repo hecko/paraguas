@@ -133,7 +133,7 @@ foreach ($data as $r) {
 	} else {
 		$out.='<a class="icon-hand-up" href="ack.php?id='.$r['id'].'"></a>';
 	}
-	$out.='<a class="icon-info-sign" href="event_detail.php?id='.$r['id'].'">i</a>';
+	$out.='<a class="icon-info-sign" href="event_detail.php?id='.$r['id'].'"></a>';
   $out.='</td>';
   $out.='</tr>';
 }
